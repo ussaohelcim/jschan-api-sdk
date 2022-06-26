@@ -1,10 +1,10 @@
 {
   "name": "jschan-api-sdk",
   "version": "1.0.0",
-  "description": "",
+  "description": "Helper package to handle requests to a jschan api instance.",
   "main": "dist/main.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "compile": "tsc"
   },
   "repository": {
     "type": "git",
@@ -21,7 +21,8 @@
     "jschan-api-types": "github:ussaohelcim/jschan-api-types"
   },
   "devDependencies": {
-    "@types/node": "^18.0.0"
+    "@types/node": "^18.0.0",
+    "typescript": "^4.7.4"
   },
   "typings": "./dist/main.d.ts"
 }
