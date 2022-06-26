@@ -22,6 +22,6 @@
   "devDependencies": {
     "@types/node": "^18.0.0",
     "jschan-api-types": "github:ussaohelcim/jschan-api-types"
-  }
-
+  },
+  "typings": "./dist/main.d.ts"
 }
