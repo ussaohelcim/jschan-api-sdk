@@ -1,0 +1,27 @@
+{
+  "name": "jschan-api-sdk",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ussaohelcim/jschan-api-sdk.git"
+  },
+  "author": "ussaohelcim",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ussaohelcim/jschan-api-sdk/issues"
+  },
+  "homepage": "https://github.com/ussaohelcim/jschan-api-sdk#readme",
+  "dependencies": {
+    "axios": "^0.27.2"
+  },
+  "devDependencies": {
+    "@types/node": "^18.0.0",
+    "jschan-api-types": "github:ussaohelcim/jschan-api-types"
+  }
+
+}
