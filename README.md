@@ -8,7 +8,7 @@ Helper package to handle requests to a jschan api instance.
 
 ```js
 const { jschan } = require('jschan-api-sdk')
-const api = new jschan.api("https://ptchan.org")
+const api = new jschan.api("https://fatchan.org")
 ```
 ```ts
 import { jschan } from "jschan-api-sdk";
