@@ -14,3 +14,24 @@ const api = new jschan.api("https://fatchan.org")
 import { jschan } from "jschan-api-sdk";
 const api = new jschan.api("https://ptchan.org")
 ```
+
+```js
+const sdk = new jschan.api("https://ptchan.org")
+const post = {
+	message:"Hello.",
+	thread:0,
+}
+sdk.postThread("br",post)//200
+//Reply the thread 0 from "br", with the message "Hello."
+```
+
+```js
+const sdk = new jschan.api("https://ptchan.org")
+const post = {
+	message:"Hello, /br/!.",
+	thread:null,
+	file: createReadStream("image.jpg")
+}
+sdk.postThread("br",post)//200
+//Creates a new thread with the image
+```
