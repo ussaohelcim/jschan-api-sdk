@@ -21,7 +21,7 @@ const post = {
 	message:"Hello.",
 	thread:0,
 }
-sdk.postThread("br",post)//200
+sdk.postThread("br",post)//Promise<Number(200)>
 //Reply the thread 0 from "br", with the message "Hello."
 ```
 
@@ -32,6 +32,38 @@ const post = {
 	thread:null,
 	file: createReadStream("image.jpg")
 }
-sdk.postThread("br",post)//200
+sdk.postThread("br",post)//Promise<Number(200)>
 //Creates a new thread with the image
+```
+
+```js
+const sdk = new jschan.api("https://ptchan.org")
+
+sdk.getOverboardCatalog({
+	include_default:false,
+	add:"br,cyb"
+}).then((res)=>{
+	console.log(res)
+})
+
+sdk.getBoardList({
+	direction:'asc',
+	search:"hue",
+	sort:'popularity'
+}).then((res)=>{
+	console.log(res)
+})
+
+sdk.getBoardPage('br',10).then((res)=>{
+	console.log(res)
+})
+
+sdk.getBoardPage('br').then((res)=>{
+	console.log(res)
+})
+
+sdk.getOverboardIndex().then((res)=>{
+	console.log(res)
+})
+
 ```

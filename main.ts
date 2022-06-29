@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-import {IThread,INewPost, IBoardList, IReply} from "jschan-api-types"
+import {IThread,INewPost, IBoardList, IReply, IBoardQuery, IOverboardQuery} from "jschan-api-types"
 
 export namespace jschan{
 	export class api{
@@ -59,9 +59,9 @@ export namespace jschan{
 		 * Returns a list of boards, max 30 per page. Unlisted boards are not included in search results. Also return the current page and maximum page with the current search and sites parameters.
 		 * @returns 
 		 */
-		async getBoardList(){
+		async getBoardList(query?:IBoardQuery){
 			//TODO implement queries
-			const boards = await this.get(`${this.url}/boards.json`) as IBoardList
+			const boards = await this.get(`${this.url}/boards.json${this.boardQueryToString(query ?? {})}`) as IBoardList
 			return boards 
 		}
 		/**
@@ -74,25 +74,22 @@ export namespace jschan{
 			return catalog 
 		}
 		/**
-		 * Returns a string with the path to the thumbs directory.
-		 * @returns website.com/file/thumb/
+		 * Returns a list of threads with preview replies from a page of a board.
+		 * @param board Board tag.
+		 * @param pageNumber Optional. If undefined returns the index page.
+		 * @returns 
 		 */
-		getThumbPath(){
-			return `${this.getFilesPath()}/thumb/`
+		async getBoardPage(board:string,pageNumber?:number){			 
+			let catalog = await this.get(`${this.url}/${board}/${pageNumber ?? 'index'}.json`) as IThread[]
+			return catalog 
 		}
-		/**
-		 * Returns a string with the path to the files directory.
-		 * @returns website.com/file/
-		 */
-		getFilesPath(){
-			return `${this.url}/file/`
-		}
+		
 		/**
 		 * Returns a list of threads without replies from multiple boards. Similar to board catalog pages.
 		 * @returns list of threads.
 		 */
-		async getOverboardCatalog(){
-			const catalog = await this.get(`${this.url}/catalog.json`) as IThread[]
+		async getOverboardCatalog(query?:IOverboardQuery){
+			const catalog = await this.get(`${this.url}/catalog.json${this.overboardQueryToString(query ?? {})}`) as IThread[]
 			return catalog
 		}
 		/**
@@ -113,6 +110,26 @@ export namespace jschan{
 			)).data
 		
 			return res
+		}
+		private boardQueryToString(query:IBoardQuery){
+			return `?search=${query.search ?? ''}&sort=${query.sort ?? ''}&direction=${query.direction ?? ''}`
+		}
+		private overboardQueryToString(query:IOverboardQuery){
+			return `?include_default=${query.include_default ?? false}&add=${query.add ?? ''}&rem=${query.rem ?? ''}`
+		}
+		/**
+		 * Returns a string with the path to the thumbs directory.
+		 * @returns website.com/file/thumb/
+		 */
+		private getThumbPath(){
+			return `${this.getFilesPath()}/thumb/`
+		}
+		/**
+		 * Returns a string with the path to the files directory.
+		 * @returns website.com/file/
+		 */
+		private getFilesPath(){
+			return `${this.url}/file/`
 		}
 	}
 }

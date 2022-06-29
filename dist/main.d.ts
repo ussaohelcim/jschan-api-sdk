@@ -1,4 +1,4 @@
-import { IThread, INewPost, IBoardList } from "jschan-api-types";
+import { IThread, INewPost, IBoardList, IBoardQuery, IOverboardQuery } from "jschan-api-types";
 export declare namespace jschan {
     class api {
         url: string;
@@ -29,7 +29,7 @@ export declare namespace jschan {
          * Returns a list of boards, max 30 per page. Unlisted boards are not included in search results. Also return the current page and maximum page with the current search and sites parameters.
          * @returns
          */
-        getBoardList(): Promise<IBoardList>;
+        getBoardList(query?: IBoardQuery): Promise<IBoardList>;
         /**
          * Returns a list of all threads on a board.
          * @param board board id
@@ -37,25 +37,34 @@ export declare namespace jschan {
          */
         getBoardCatalog(board: string): Promise<IThread[]>;
         /**
-         * Returns a string with the path to the thumbs directory.
-         * @returns website.com/file/thumb/
+         * Returns a list of threads with preview replies from a page of a board.
+         * @param board Board tag.
+         * @param pageNumber Optional. If undefined returns the index page.
+         * @returns
          */
-        getThumbPath(): string;
-        /**
-         * Returns a string with the path to the files directory.
-         * @returns website.com/file/
-         */
-        getFilesPath(): string;
+        getBoardPage(board: string, pageNumber?: number): Promise<IThread[]>;
         /**
          * Returns a list of threads without replies from multiple boards. Similar to board catalog pages.
          * @returns list of threads.
          */
-        getOverboardCatalog(): Promise<IThread[]>;
+        getOverboardCatalog(query?: IOverboardQuery): Promise<IThread[]>;
         /**
          * Returns a list of threads with preview replies from multiple boards. Similar to board index pages.
          * @returns list of threads with preview replies.
          */
         getOverboardIndex(): Promise<IThread[]>;
         private get;
+        private boardQueryToString;
+        private overboardQueryToString;
+        /**
+         * Returns a string with the path to the thumbs directory.
+         * @returns website.com/file/thumb/
+         */
+        private getThumbPath;
+        /**
+         * Returns a string with the path to the files directory.
+         * @returns website.com/file/
+         */
+        private getFilesPath;
     }
 }

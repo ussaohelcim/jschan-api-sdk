@@ -57,9 +57,9 @@ var jschan;
          * Returns a list of boards, max 30 per page. Unlisted boards are not included in search results. Also return the current page and maximum page with the current search and sites parameters.
          * @returns
          */
-        async getBoardList() {
+        async getBoardList(query) {
             //TODO implement queries
-            const boards = await this.get(`${this.url}/boards.json`);
+            const boards = await this.get(`${this.url}/boards.json${this.boardQueryToString(query ?? {})}`);
             return boards;
         }
         /**
@@ -72,25 +72,21 @@ var jschan;
             return catalog;
         }
         /**
-         * Returns a string with the path to the thumbs directory.
-         * @returns website.com/file/thumb/
+         * Returns a list of threads with preview replies from a page of a board.
+         * @param board Board tag.
+         * @param pageNumber Optional. If undefined returns the index page.
+         * @returns
          */
-        getThumbPath() {
-            return `${this.getFilesPath()}/thumb/`;
-        }
-        /**
-         * Returns a string with the path to the files directory.
-         * @returns website.com/file/
-         */
-        getFilesPath() {
-            return `${this.url}/file/`;
+        async getBoardPage(board, pageNumber) {
+            let catalog = await this.get(`${this.url}/${board}/${pageNumber ?? 'index'}.json`);
+            return catalog;
         }
         /**
          * Returns a list of threads without replies from multiple boards. Similar to board catalog pages.
          * @returns list of threads.
          */
-        async getOverboardCatalog() {
-            const catalog = await this.get(`${this.url}/catalog.json`);
+        async getOverboardCatalog(query) {
+            const catalog = await this.get(`${this.url}/catalog.json${this.overboardQueryToString(query ?? {})}`);
             return catalog;
         }
         /**
@@ -108,6 +104,26 @@ var jschan;
                     "origin": this.url
                 } })).data;
             return res;
+        }
+        boardQueryToString(query) {
+            return `?search=${query.search ?? ''}&sort=${query.sort ?? ''}&direction=${query.direction ?? ''}`;
+        }
+        overboardQueryToString(query) {
+            return `?include_default=${query.include_default ?? false}&add=${query.add ?? ''}&rem=${query.rem ?? ''}`;
+        }
+        /**
+         * Returns a string with the path to the thumbs directory.
+         * @returns website.com/file/thumb/
+         */
+        getThumbPath() {
+            return `${this.getFilesPath()}/thumb/`;
+        }
+        /**
+         * Returns a string with the path to the files directory.
+         * @returns website.com/file/
+         */
+        getFilesPath() {
+            return `${this.url}/file/`;
         }
     }
     jschan.api = api;
