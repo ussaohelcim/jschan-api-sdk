@@ -5,7 +5,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.jschan = void 0;
 const axios_1 = __importDefault(require("axios"));
-const path_1 = __importDefault(require("path"));
 var jschan;
 (function (jschan) {
     class api {
@@ -36,18 +35,21 @@ var jschan;
          * @param reply Reply object, with message, file, email etc...
          * @param postId post number, such as 55555, to use as referer. If undefined, the board will be used as referer.
          */
-        async postThread(board_id, reply, postId) {
+        async postThread(board_id, reply) {
             let resCode = 0;
-            await axios_1.default.post(`${this.url}/forms/board/${board_id}/post`, reply, { method: "POST", headers: {
+            await axios_1.default.post(`${this.url}/forms/board/${board_id}/post`, reply, {
+                method: "POST",
+                headers: {
                     "User-Agent": "jschan-api-sdk",
-                    "Referer": postId ? path_1.default.normalize(`${this.url}/${board_id}/thread/${postId}.html`) : path_1.default.normalize(`${this.url}/${board_id}/index.html`),
+                    "Referer": this.url,
                     "origin": this.url,
                     "Content-Type": "multipart/form-data"
-                } })
+                },
+            })
                 .then((res) => {
                 resCode = res.status;
             }).catch((err) => {
-                throw new Error("Something went wrong");
+                throw new Error(err);
             });
             return resCode;
         }

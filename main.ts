@@ -1,7 +1,6 @@
 import axios from 'axios';
-import path from 'path';
 
-import {IThread,INewPost, IBoardList} from "jschan-api-types"
+import {IThread,INewPost, IBoardList, IReply} from "jschan-api-types"
 
 export namespace jschan{
 	export class api{
@@ -34,21 +33,25 @@ export namespace jschan{
 		 * @param reply Reply object, with message, file, email etc...
 		 * @param postId post number, such as 55555, to use as referer. If undefined, the board will be used as referer.
 		 */
-		async postThread(board_id:string, reply:INewPost,postId?:number){
+		async postThread(board_id:string, reply:INewPost){
 			let resCode = 0
+			
 			await axios.post(
 				`${this.url}/forms/board/${board_id}/post`,
 				reply,
-				{method:"POST",headers:{
-					"User-Agent":"jschan-api-sdk",
-					"Referer": postId ? path.normalize(`${this.url}/${board_id}/thread/${postId}.html`) : path.normalize(`${this.url}/${board_id}/index.html`) ,
-					"origin": this.url,
-					"Content-Type": "multipart/form-data"
-				}})
+				{
+					method:"POST",
+					headers:{
+						"User-Agent":"jschan-api-sdk",
+						"Referer": this.url,
+						"origin": this.url,
+						"Content-Type": "multipart/form-data"
+					},
+				})
 			.then((res)=>{
 				resCode = res.status
 			}).catch((err)=>{
-				throw new Error("Something went wrong");
+				throw new Error(err);
 			})
 			return resCode
 		}

@@ -24,7 +24,7 @@ export declare namespace jschan {
          * @param reply Reply object, with message, file, email etc...
          * @param postId post number, such as 55555, to use as referer. If undefined, the board will be used as referer.
          */
-        postThread(board_id: string, reply: INewPost, postId?: number): Promise<number>;
+        postThread(board_id: string, reply: INewPost): Promise<number>;
         /**
          * Returns a list of boards, max 30 per page. Unlisted boards are not included in search results. Also return the current page and maximum page with the current search and sites parameters.
          * @returns
