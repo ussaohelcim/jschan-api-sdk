@@ -1,6 +1,9 @@
 import axios from 'axios';
 
-import {IThread,INewPost, IBoardList, IReply, IBoardQuery, IOverboardQuery} from "jschan-api-types"
+import { IThread, INewPost, IBoardList, IBoardQuery, IOverboardQuery, IFile, IFilter, IBoard, IPost, IThreadOverboard, IOverboardIndex} from "jschan-api-types"
+import { URLSearchParams } from 'url';
+
+import {custom} from "./custom"
 
 export namespace jschan{
 	export class api{
@@ -11,7 +14,7 @@ export namespace jschan{
 		 * Please remove the last '/' from the url.   
 		 * 	Ex:  
 		 * 	  https://ptchan.org   < RIGHT  
-		 * 	  https://fatchan.org/  < WRONG  
+		 * 	  https://fatchan.org/  < **WRONG**  
 		 * ```js
 		 * const api = new jschan.api("https://ptchan.org")
 		 * ```
@@ -61,7 +64,10 @@ export namespace jschan{
 		 */
 		async getBoardList(query?:IBoardQuery){
 			//TODO implement queries
-			const boards = await this.get(`${this.url}/boards.json${this.boardQueryToString(query ?? {})}`) as IBoardList
+			const boards = await this.get(
+				`${this.url}/boards.json`,
+				query ? new URLSearchParams(Object.entries(query)) : undefined
+			) as IBoardList
 			return boards 
 		}
 		/**
@@ -70,9 +76,10 @@ export namespace jschan{
 		 * @returns a list of all threads on a board
 		 */
 		async getBoardCatalog(board:string){			 
-			let catalog = await this.get(`${this.url}/${board}/catalog.json`) as IThread[]
+			let catalog = await this.get(`${this.url}/${board}/catalog.json`) as IPost[]
 			return catalog 
 		}
+
 		/**
 		 * Returns a list of threads with preview replies from a page of a board.
 		 * @param board Board tag.
@@ -83,53 +90,89 @@ export namespace jschan{
 			let catalog = await this.get(`${this.url}/${board}/${pageNumber ?? 'index'}.json`) as IThread[]
 			return catalog 
 		}
+
+		getM3uPlaylistFrom(thread:IThread){
+			const fyleTypes = [".webm",".mp4",".mp3"]
+			const lines:string[] = []
+			let files = custom.Thread(thread).getAllFiles()
+
+			lines.push("#EXTM3U")
+
+			for (let i = 0; i < files.length; i++) {
+				const media = files[i];
+
+				if(fyleTypes.includes(media.extension))
+				{
+					lines.push(`#EXTINF:${media.duration}, ${media.filename}`)
+					lines.push(`${this.url}/file/${media.filename}`)
+				}
+
+			}
+
+			return lines.join('\n')
+		}
 		
 		/**
 		 * Returns a list of threads without replies from multiple boards. Similar to board catalog pages.
 		 * @returns list of threads.
 		 */
 		async getOverboardCatalog(query?:IOverboardQuery){
-			const catalog = await this.get(`${this.url}/catalog.json${this.overboardQueryToString(query ?? {})}`) as IThread[]
+			// const params = new URLSearchParams(query ?? '')
+			const catalog = await this.get(
+				`${this.url}/catalog.json`,
+				query ? new URLSearchParams(Object.entries(query)) : undefined
+			) as IPost[]
 			return catalog
 		}
 		/**
 		 * Returns a list of threads with preview replies from multiple boards. Similar to board index pages.
 		 * @returns list of threads with preview replies.
 		 */
-		async getOverboardIndex(){
-			//
-			const catalog = await this.get(`${this.url}/overboard.json`) as IThread[]
+		async getOverboardIndex(query?:IOverboardQuery){
+			const catalog = await this.get(
+				`${this.url}/overboard.json`,
+				query ? new URLSearchParams(Object.entries(query)) : undefined
+			) as IOverboardIndex
 			return catalog
 		}
-		private async get(url:string){
-			const res = (await axios.get(
-				url,{headers:{
-					"User-Agent":"jschan-api-sdk",
-					"origin": this.url
-				}}
-			)).data
-		
-			return res
+		/**@deprecated not yed implemented */
+		async login(username:string,password:string){
+			//TODO get a session cookie
+			throw new Error("Not yet implemented. 3==D");
 		}
-		private boardQueryToString(query:IBoardQuery){
-			return `?search=${query.search ?? ''}&sort=${query.sort ?? ''}&direction=${query.direction ?? ''}`
+		/**@deprecated not yed implemented */
+		async getCaptcha(){
+			throw new Error("Not yet implemented. 3==D");
 		}
-		private overboardQueryToString(query:IOverboardQuery){
-			return `?include_default=${query.include_default ?? false}&add=${query.add ?? ''}&rem=${query.rem ?? ''}`
-		}
+
 		/**
 		 * Returns a string with the path to the thumbs directory.
 		 * @returns website.com/file/thumb/
 		 */
-		private getThumbPath(){
-			return `${this.getFilesPath()}/thumb/`
+		getThumbPath(file:IFile){
+			return `${this.getFilesPath()}/thumb/${file.filename}`
 		}
 		/**
 		 * Returns a string with the path to the files directory.
 		 * @returns website.com/file/
 		 */
-		private getFilesPath(){
+		getFilesPath(){
 			return `${this.url}/file/`
 		}
+
+		private async get(url:string,params?:URLSearchParams){
+			const res = (await axios.get(
+				url,{
+					headers:{
+					"User-Agent":"jschan-api-sdk",
+					"origin": this.url
+					},
+					params:params ?? ''
+				}
+			)).data
+		
+			return res
+		}
 	}
+	
 }

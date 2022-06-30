@@ -1,4 +1,4 @@
-import { IThread, INewPost, IBoardList, IBoardQuery, IOverboardQuery } from "jschan-api-types";
+import { IThread, INewPost, IBoardList, IBoardQuery, IOverboardQuery, IFile, IPost, IOverboardIndex } from "jschan-api-types";
 export declare namespace jschan {
     class api {
         url: string;
@@ -7,7 +7,7 @@ export declare namespace jschan {
          * Please remove the last '/' from the url.
          * 	Ex:
          * 	  https://ptchan.org   < RIGHT
-         * 	  https://fatchan.org/  < WRONG
+         * 	  https://fatchan.org/  < **WRONG**
          * ```js
          * const api = new jschan.api("https://ptchan.org")
          * ```
@@ -35,7 +35,7 @@ export declare namespace jschan {
          * @param board board id
          * @returns a list of all threads on a board
          */
-        getBoardCatalog(board: string): Promise<IThread[]>;
+        getBoardCatalog(board: string): Promise<IPost[]>;
         /**
          * Returns a list of threads with preview replies from a page of a board.
          * @param board Board tag.
@@ -43,28 +43,31 @@ export declare namespace jschan {
          * @returns
          */
         getBoardPage(board: string, pageNumber?: number): Promise<IThread[]>;
+        getM3uPlaylistFrom(thread: IThread): string;
         /**
          * Returns a list of threads without replies from multiple boards. Similar to board catalog pages.
          * @returns list of threads.
          */
-        getOverboardCatalog(query?: IOverboardQuery): Promise<IThread[]>;
+        getOverboardCatalog(query?: IOverboardQuery): Promise<IPost[]>;
         /**
          * Returns a list of threads with preview replies from multiple boards. Similar to board index pages.
          * @returns list of threads with preview replies.
          */
-        getOverboardIndex(): Promise<IThread[]>;
-        private get;
-        private boardQueryToString;
-        private overboardQueryToString;
+        getOverboardIndex(query?: IOverboardQuery): Promise<IOverboardIndex>;
+        /**@deprecated not yed implemented */
+        login(username: string, password: string): Promise<void>;
+        /**@deprecated not yed implemented */
+        getCaptcha(): Promise<void>;
         /**
          * Returns a string with the path to the thumbs directory.
          * @returns website.com/file/thumb/
          */
-        private getThumbPath;
+        getThumbPath(file: IFile): string;
         /**
          * Returns a string with the path to the files directory.
          * @returns website.com/file/
          */
-        private getFilesPath;
+        getFilesPath(): string;
+        private get;
     }
 }
