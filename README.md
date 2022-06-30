@@ -67,3 +67,30 @@ sdk.getOverboardIndex().then((res)=>{
 })
 
 ```
+
+# Custom stuff
+
+There is also a custom library in development.
+
+```ts
+
+import {jschan} from "jschan-api-sdk"
+import {custom} from "jschan-api-sdk/custom"
+
+const pt = new jschan.api("https://ptchan.org")
+
+pt.getThread("i",0).then((t)=>{
+	let ct = custom.Thread(t)
+	let filenames = ct.getAllFiles().map((f)=>{
+		return pt.getFilesPath() + f.filename
+	})
+	
+	console.log(filenames)
+	/**
+	 * ["https://ptchan.org/file/12345abcde.jpg",
+	 * "https://ptchan.org/file/12345abcde.mp4",
+	 * "https://ptchan.org/file/12345abcde.webm"]
+	 */
+})
+
+```
