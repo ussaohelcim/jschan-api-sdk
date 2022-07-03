@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-import { IThread, INewPost, IBoardList, IBoardQuery, IOverboardQuery, IFile, IFilter, IBoard, IPost, IThreadOverboard, IOverboardIndex} from "jschan-api-types"
+import { IThread, INewPost, IBoardList, IBoardQuery, IOverboardQuery, IFile, IFilter, IBoard, IPost, IThreadOverboard, IOverboardIndex, IPostAction} from "jschan-api-types"
 import { URLSearchParams } from 'url';
 
 import {custom} from "./custom"
@@ -54,7 +54,7 @@ export namespace jschan{
 			.then((res)=>{
 				resCode = res.status
 			}).catch((err)=>{
-				throw new Error(err);
+				resCode = err.response.status
 			})
 			return resCode
 		}
@@ -140,9 +140,25 @@ export namespace jschan{
 			//TODO get a session cookie
 			throw new Error("Not yet implemented. 3==D");
 		}
-		/**@deprecated not yed implemented */
+
+		/**
+		 * Returns a captcha image with the captchaid cookie.
+		 * DOESN'T WORK WITH THE CHESS CAPTCHA
+		 * @returns the cookie string and the imageUrl.
+		 */
 		async getCaptcha(){
-			throw new Error("Not yet implemented. 3==D");
+			let r = await axios.get(
+				`${this.url}/captcha`,
+			)
+			let reqPath = r.request.path as string
+			let imgPath = `${this.url}${reqPath}`
+			
+			let cookie = `captchaid=${reqPath.replace('/captcha/','').replace('.jpg','')}`
+
+			return {
+				imageUrl:imgPath,
+				cookie:cookie
+			}
 		}
 
 		/**
@@ -158,6 +174,42 @@ export namespace jschan{
 		 */
 		getFilesPath(){
 			return `${this.url}/file/`
+		}
+
+		/**
+		 * @todo Fix 
+		 * @deprecated This isnt working.
+		 * @param thread 
+		 * @param postAction 
+		 * @returns 
+		 */
+		async action(thread:IThread,postAction:IPostAction,cookie:string){
+			let resCode = 0 
+			await axios.post(
+				`${this.url}/forms/board/${thread.board}/actions`,
+				// Object.entries(postAction),
+				{
+					method:"POST",
+					headers:{
+						"User-Agent":"jschan-api-sdk",
+						"Referer": this.url,
+						"origin": this.url,
+						"Content-Type": "multipart/form-data",
+						'Cookie':cookie,
+						'x-using-xhr': true,
+						'x-using-live': true
+					},
+					withCredentials:true,
+					data:postAction
+				}
+			)
+			.then((res)=>{
+				resCode = res.status
+			}).catch((err)=>{
+				resCode = Number(err.response.status) 
+			})
+			
+			return resCode;
 		}
 
 		private async get(url:string,params?:URLSearchParams){

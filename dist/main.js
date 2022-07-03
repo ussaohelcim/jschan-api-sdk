@@ -51,7 +51,7 @@ var jschan;
                 .then((res) => {
                 resCode = res.status;
             }).catch((err) => {
-                throw new Error(err);
+                resCode = err.response.status;
             });
             return resCode;
         }
@@ -119,9 +119,19 @@ var jschan;
             //TODO get a session cookie
             throw new Error("Not yet implemented. 3==D");
         }
-        /**@deprecated not yed implemented */
+        /**
+         *
+         * @returns
+         */
         async getCaptcha() {
-            throw new Error("Not yet implemented. 3==D");
+            let r = await axios_1.default.get(`${this.url}/captcha`);
+            let reqPath = r.request.path;
+            let imgPath = `${this.url}${reqPath}`;
+            let cookie = `captchaid=${reqPath.replace('/captcha/', '').replace('.jpg', '')}`;
+            return {
+                imageUrl: imgPath,
+                cookie: cookie
+            };
         }
         /**
          * Returns a string with the path to the thumbs directory.
@@ -136,6 +146,38 @@ var jschan;
          */
         getFilesPath() {
             return `${this.url}/file/`;
+        }
+        /**
+         * @todo Fix
+         * @deprecated This isnt working.
+         * @param thread
+         * @param postAction
+         * @returns
+         */
+        async action(thread, postAction, cookie) {
+            let resCode = 0;
+            await axios_1.default.post(`${this.url}/forms/board/${thread.board}/actions`, 
+            // Object.entries(postAction),
+            {
+                method: "POST",
+                headers: {
+                    "User-Agent": "jschan-api-sdk",
+                    "Referer": this.url,
+                    "origin": this.url,
+                    "Content-Type": "multipart/form-data",
+                    'Cookie': cookie,
+                    'x-using-xhr': true,
+                    'x-using-live': true
+                },
+                withCredentials: true,
+                data: postAction
+            })
+                .then((res) => {
+                resCode = res.status;
+            }).catch((err) => {
+                resCode = Number(err.response.status);
+            });
+            return resCode;
         }
         async get(url, params) {
             const res = (await axios_1.default.get(url, {

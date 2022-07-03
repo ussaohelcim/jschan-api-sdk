@@ -1,6 +1,6 @@
 # jschan-api-sdk
 
-Helper package to handle requests to a jschan api instance.
+Helper nodejs package to handle requests to a jschan api instance.
 
 # How to use
 

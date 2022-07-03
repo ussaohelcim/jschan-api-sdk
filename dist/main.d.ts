@@ -1,4 +1,4 @@
-import { IThread, INewPost, IBoardList, IBoardQuery, IOverboardQuery, IFile, IPost, IOverboardIndex } from "jschan-api-types";
+import { IThread, INewPost, IBoardList, IBoardQuery, IOverboardQuery, IFile, IPost, IOverboardIndex, IPostAction } from "jschan-api-types";
 export declare namespace jschan {
     class api {
         url: string;
@@ -56,8 +56,14 @@ export declare namespace jschan {
         getOverboardIndex(query?: IOverboardQuery): Promise<IOverboardIndex>;
         /**@deprecated not yed implemented */
         login(username: string, password: string): Promise<void>;
-        /**@deprecated not yed implemented */
-        getCaptcha(): Promise<void>;
+        /**
+         *
+         * @returns
+         */
+        getCaptcha(): Promise<{
+            imageUrl: string;
+            cookie: string;
+        }>;
         /**
          * Returns a string with the path to the thumbs directory.
          * @returns website.com/file/thumb/
@@ -68,6 +74,14 @@ export declare namespace jschan {
          * @returns website.com/file/
          */
         getFilesPath(): string;
+        /**
+         * @todo Fix
+         * @deprecated This isnt working.
+         * @param thread
+         * @param postAction
+         * @returns
+         */
+        action(thread: IThread, postAction: IPostAction, cookie: string): Promise<number>;
         private get;
     }
 }
